@@ -143,22 +143,49 @@ public class WindowServiceNew extends Service implements View.OnTouchListener {
         windowWidth = NumberUtils.getInt(paramsMap.get(Constants.KEY_WIDTH));
         windowHeight = NumberUtils.getInt(paramsMap.get(Constants.KEY_HEIGHT));
     }
+        private WindowManager.LayoutParams getLayoutParams() {
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
 
-    private WindowManager.LayoutParams getLayoutParams() {
-        final WindowManager.LayoutParams params;
-        params = new WindowManager.LayoutParams();
-        params.width = (windowWidth == 0) ? WindowManager.LayoutParams.MATCH_PARENT : Commons.getPixelsFromDp(this, windowWidth);
-        params.height = (windowHeight == 0) ? WindowManager.LayoutParams.WRAP_CONTENT : Commons.getPixelsFromDp(this, windowHeight);
+        params.width = (windowWidth == 0)
+                ? WindowManager.LayoutParams.MATCH_PARENT
+                : Commons.getPixelsFromDp(this, windowWidth);
+        params.height = (windowHeight == 0)
+                ? WindowManager.LayoutParams.WRAP_CONTENT
+                : Commons.getPixelsFromDp(this, windowHeight);
         params.format = PixelFormat.TRANSLUCENT;
         params.type = paramType;
-        params.flags |= paramFlags;
-        params.flags |= paramsFromDart;
+
+        // ⚙️ The important flags:
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE   // ignore all taps
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && Commons.isClickDisabled) {
             params.alpha = 0.8f;
         }
+
         params.gravity = Commons.getGravity(windowGravity, Gravity.TOP);
         return params;
     }
+
+
+    // private WindowManager.LayoutParams getLayoutParams() {
+    //     final WindowManager.LayoutParams params;
+    //     params = new WindowManager.LayoutParams();
+    //     params.width = (windowWidth == 0) ? WindowManager.LayoutParams.MATCH_PARENT : Commons.getPixelsFromDp(this, windowWidth);
+    //     params.height = (windowHeight == 0) ? WindowManager.LayoutParams.WRAP_CONTENT : Commons.getPixelsFromDp(this, windowHeight);
+    //     params.format = PixelFormat.TRANSLUCENT;
+    //     params.type = paramType;
+    //     params.flags |= paramFlags;
+    //     params.flags |= paramsFromDart;
+    //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && Commons.isClickDisabled) {
+    //         params.alpha = 0.8f;
+    //     }
+    //     params.gravity = Commons.getGravity(windowGravity, Gravity.TOP);
+    //     return params;
+    // }
     @SuppressLint("ClickableViewAccessibility")
 private void createWindow(HashMap<String, Object> paramsMap) {
     try {

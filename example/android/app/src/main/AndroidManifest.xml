@@ -13,7 +13,7 @@
 
     <application
         android:hardwareAccelerated="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/notification"
         android:label="system_alert_window_example">
 
         <activity

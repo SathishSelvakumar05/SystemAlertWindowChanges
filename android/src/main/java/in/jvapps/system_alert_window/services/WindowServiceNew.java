@@ -202,7 +202,7 @@ private void createWindow(HashMap<String, Object> paramsMap) {
         });
 
         // Optional: hide close button if app is in background
-        if (!isAppInForeground()) {
+        if (!isAppInForeground()||isAppInForeground() {
             View closeButton = flutterView.findViewById(R.id.close_button);
             if (closeButton != null) closeButton.setVisibility(View.GONE);
         }
@@ -293,7 +293,7 @@ private void createWindow(HashMap<String, Object> paramsMap) {
         } catch (IllegalArgumentException e) {
             LogUtils.getInstance().e(TAG, "view not found");
         }
-        if (isStopService&&!isAppInBackground) {
+        if (isStopService||!isStopService) {
             stopSelf();
         }
     }

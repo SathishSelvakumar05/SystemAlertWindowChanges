@@ -1,4 +1,7 @@
 package in.jvapps.system_alert_window.services;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Build;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
 
@@ -36,6 +39,10 @@ import io.flutter.embedding.android.FlutterTextureView;
 import io.flutter.embedding.android.FlutterView;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.FlutterEngineCache;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Build;
+
 
 public class WindowServiceNew extends Service implements View.OnTouchListener {
 
@@ -221,6 +228,7 @@ public class WindowServiceNew extends Service implements View.OnTouchListener {
     }
 
     private void closeWindow(boolean isStopService) {
+        boolean isAppInBackground = !isAppInForeground(); // now this works
         LogUtils.getInstance().i(TAG, "Closing the overlay window");
         try {
             if (windowManager != null && flutterView != null) {
@@ -232,8 +240,19 @@ public class WindowServiceNew extends Service implements View.OnTouchListener {
         } catch (IllegalArgumentException e) {
             LogUtils.getInstance().e(TAG, "view not found");
         }
-        if (isStopService) {
+        if (isStopService&&!isAppInBackground) {
             stopSelf();
+        }
+    }
+    private boolean isAppInForeground() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return !activityManager.getRunningTasks(1).isEmpty() &&
+                    activityManager.getRunningTasks(1).get(0).topActivity.getPackageName().equals(getPackageName());
+        } else {
+            return activityManager.getRunningTasks(1).get(0).topActivity.getPackageName().equals(getPackageName());
         }
     }
 

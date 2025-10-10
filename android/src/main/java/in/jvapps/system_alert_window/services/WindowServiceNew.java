@@ -159,36 +159,89 @@ public class WindowServiceNew extends Service implements View.OnTouchListener {
         params.gravity = Commons.getGravity(windowGravity, Gravity.TOP);
         return params;
     }
-
     @SuppressLint("ClickableViewAccessibility")
-    private void createWindow(HashMap<String, Object> paramsMap) {
-        try {
-            closeWindow(false);
-            setWindowManager();
-            setWindowLayoutFromMap(paramsMap);
-            WindowManager.LayoutParams params = getLayoutParams();
-            FlutterEngine engine = FlutterEngineCache.getInstance().get(Constants.FLUTTER_CACHE_ENGINE);
-            if (engine == null) {
-                throw new IllegalStateException("FlutterEngine not available");
-            }
-            engine.getLifecycleChannel().appIsResumed();
-            flutterView = new FlutterView(getApplicationContext(), new FlutterTextureView(getApplicationContext()));
-            flutterView.attachToFlutterEngine(Objects.requireNonNull(FlutterEngineCache.getInstance().get(Constants.FLUTTER_CACHE_ENGINE)));
-            flutterView.setFitsSystemWindows(true);
-            flutterView.setFocusable(true);
-            flutterView.setFocusableInTouchMode(true);
-            flutterView.setBackgroundColor(Color.TRANSPARENT);
-            flutterView.setOnTouchListener(this);
-            try {
-                windowManager.addView(flutterView, params);
-            } catch (Exception ex) {
-                LogUtils.getInstance().e(TAG, ex.toString());
-                retryCreateWindow(paramsMap);
-            }
-        } catch (Exception ex) {
-            LogUtils.getInstance().e(TAG, "createWindow " + ex.getMessage());
+private void createWindow(HashMap<String, Object> paramsMap) {
+    try {
+        closeWindow(false);
+        setWindowManager();
+        setWindowLayoutFromMap(paramsMap);
+        WindowManager.LayoutParams params = getLayoutParams();
+        FlutterEngine engine = FlutterEngineCache.getInstance().get(Constants.FLUTTER_CACHE_ENGINE);
+        if (engine == null) {
+            throw new IllegalStateException("FlutterEngine not available");
         }
+        engine.getLifecycleChannel().appIsResumed();
+        flutterView = new FlutterView(getApplicationContext(), new FlutterTextureView(getApplicationContext()));
+        flutterView.attachToFlutterEngine(Objects.requireNonNull(FlutterEngineCache.getInstance().get(Constants.FLUTTER_CACHE_ENGINE)));
+        flutterView.setFitsSystemWindows(true);
+        flutterView.setFocusable(true);
+        flutterView.setFocusableInTouchMode(true);
+        flutterView.setBackgroundColor(Color.TRANSPARENT);
+        flutterView.setOnTouchListener(this);
+
+        final HashMap<String, Object> finalParamsMap = paramsMap; // for listener
+
+        // Add overlay to window
+        try {
+            windowManager.addView(flutterView, params);
+        } catch (Exception ex) {
+            LogUtils.getInstance().e(TAG, ex.toString());
+            retryCreateWindow(paramsMap);
+        }
+
+        // ✅ Make overlay persistent: recreate if removed by system drag
+        flutterView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) { }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                LogUtils.getInstance().i(TAG, "Overlay removed by user, recreating...");
+                createWindow(finalParamsMap); // recreate overlay immediately
+            }
+        });
+
+        // Optional: hide close button if app is in background
+        if (!isAppInForeground()) {
+            View closeButton = flutterView.findViewById(R.id.close_button);
+            if (closeButton != null) closeButton.setVisibility(View.GONE);
+        }
+
+    } catch (Exception ex) {
+        LogUtils.getInstance().e(TAG, "createWindow " + ex.getMessage());
     }
+}
+
+
+    // @SuppressLint("ClickableViewAccessibility")
+    // private void createWindow(HashMap<String, Object> paramsMap) {
+    //     try {
+    //         closeWindow(false);
+    //         setWindowManager();
+    //         setWindowLayoutFromMap(paramsMap);
+    //         WindowManager.LayoutParams params = getLayoutParams();
+    //         FlutterEngine engine = FlutterEngineCache.getInstance().get(Constants.FLUTTER_CACHE_ENGINE);
+    //         if (engine == null) {
+    //             throw new IllegalStateException("FlutterEngine not available");
+    //         }
+    //         engine.getLifecycleChannel().appIsResumed();
+    //         flutterView = new FlutterView(getApplicationContext(), new FlutterTextureView(getApplicationContext()));
+    //         flutterView.attachToFlutterEngine(Objects.requireNonNull(FlutterEngineCache.getInstance().get(Constants.FLUTTER_CACHE_ENGINE)));
+    //         flutterView.setFitsSystemWindows(true);
+    //         flutterView.setFocusable(true);
+    //         flutterView.setFocusableInTouchMode(true);
+    //         flutterView.setBackgroundColor(Color.TRANSPARENT);
+    //         flutterView.setOnTouchListener(this);
+    //         try {
+    //             windowManager.addView(flutterView, params);
+    //         } catch (Exception ex) {
+    //             LogUtils.getInstance().e(TAG, ex.toString());
+    //             retryCreateWindow(paramsMap);
+    //         }
+    //     } catch (Exception ex) {
+    //         LogUtils.getInstance().e(TAG, "createWindow " + ex.getMessage());
+    //     }
+    // }
 
     @SuppressLint("ClickableViewAccessibility")
     private void retryCreateWindow(HashMap<String, Object> paramsMap) {

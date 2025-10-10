@@ -288,7 +288,7 @@ public class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, P
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void showBubble(String title, String body, HashMap<String, Object> params) {
         Context mContext = ContextHolder.getApplicationContext();
-        Icon icon = Icon.createWithResource(mContext, R.drawable.ic_notification);
+        Icon icon = Icon.createWithResource(mContext, R.drawable.yaantrac);
         NotificationHelper notificationHelper = NotificationHelper.getInstance(mContext);
         notificationHelper.showNotification(icon, title, body, params);
     }

@@ -161,6 +161,7 @@ public class WindowServiceNew extends Service implements View.OnTouchListener {
                 | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                 | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+            //| WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && Commons.isClickDisabled) {
             params.alpha = 0.8f;
@@ -217,16 +218,16 @@ private void createWindow(HashMap<String, Object> paramsMap) {
         }
 
         // ✅ Make overlay persistent: recreate if removed by system drag
-        flutterView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View v) { }
+        // flutterView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+        //     @Override
+        //     public void onViewAttachedToWindow(View v) { }
 
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                LogUtils.getInstance().i(TAG, "Overlay removed by user, recreating...");
-                createWindow(finalParamsMap); // recreate overlay immediately
-            }
-        });
+        //     @Override
+        //     public void onViewDetachedFromWindow(View v) {
+        //         LogUtils.getInstance().i(TAG, "Overlay removed by user, recreating...");
+        //         createWindow(finalParamsMap); // recreate overlay immediately
+        //     }
+        // });
 
         // Optional: hide close button if app is in background
         if (!isAppInForeground()||isAppInForeground() {
@@ -302,7 +303,7 @@ private void createWindow(HashMap<String, Object> paramsMap) {
         WindowManager.LayoutParams previousParams = (WindowManager.LayoutParams) flutterView.getLayoutParams();
         previousParams.width = (windowWidth == 0) ? WindowManager.LayoutParams.MATCH_PARENT : Commons.getPixelsFromDp(this, windowWidth);
         previousParams.height = (windowHeight == 0) ? WindowManager.LayoutParams.WRAP_CONTENT : Commons.getPixelsFromDp(this, windowHeight);
-        previousParams.flags = newParams.flags;
+        // previousParams.flags = newParams.flags;
         previousParams.alpha = newParams.alpha;
         windowManager.updateViewLayout(flutterView, previousParams);
     }

@@ -204,7 +204,7 @@ private void createWindow(HashMap<String, Object> paramsMap) {
         flutterView.setFocusable(true);
         flutterView.setFocusableInTouchMode(true);
         flutterView.setBackgroundColor(Color.TRANSPARENT);
-        flutterView.setOnTouchListener(this);
+        // flutterView.setOnTouchListener(this);
 
         final HashMap<String, Object> finalParamsMap = paramsMap; // for listener
 

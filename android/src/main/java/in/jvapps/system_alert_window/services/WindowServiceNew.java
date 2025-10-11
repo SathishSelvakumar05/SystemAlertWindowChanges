@@ -289,7 +289,7 @@ private void createWindow(HashMap<String, Object> paramsMap) {
             flutterView.setFocusable(true);
             flutterView.setFocusableInTouchMode(true);
             flutterView.setBackgroundColor(Color.TRANSPARENT);
-            flutterView.setOnTouchListener(this);
+            // flutterView.setOnTouchListener(this);
             windowManager.addView(flutterView, params);
         } catch (Exception ex) {
             LogUtils.getInstance().e(TAG, "retryCreateWindow " + ex.getMessage());

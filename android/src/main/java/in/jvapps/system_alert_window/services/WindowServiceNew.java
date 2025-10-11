@@ -320,9 +320,9 @@ private void createWindow(HashMap<String, Object> paramsMap) {
         } catch (IllegalArgumentException e) {
             LogUtils.getInstance().e(TAG, "view not found");
         }
-        if (isStopService||!isStopService) {
-            stopSelf();
-        }
+        // if (isStopService||!isStopService) {
+        //     stopSelf();
+        // }
     }
     private boolean isAppInForeground() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
